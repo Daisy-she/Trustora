@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trustora - Instant Trigger Insurance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#161611;
+    --monsoon:#2E86C8;
+    --monsoon-deep:#0B2942;
+    --mustard:#C99A1E;
+    --parchment:#FFFFFF;
+    --paper:#FFFFFF;
+    --teal:#2E86AB;
+    --clay:#A87D14;
+    --line:#DEDDD3;
+    --ink-soft:#54544A;
+
+    --display: 'Poppins', sans-serif;
+    --body: 'Poppins', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--parchment);
+    color:var(--ink);
+    font-family:var(--body);
+    line-height:1.5;
+  }
+  a{color:inherit;}
+  img{max-width:100%;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px;}
+
+  /* ---------- NAV ---------- */
+  header.site{
+    position:sticky;top:0;z-index:50;
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+    overflow:visible;
+  }
+  nav.wrap{
+    display:grid;grid-template-columns:auto 1fr auto;align-items:center;
+    column-gap:28px;height:72px;overflow:visible;
+    max-width:none;width:100%;padding-left:40px;padding-right:40px;
+  }
+  .brand{display:flex;align-items:center;justify-self:start;font-family:var(--display);font-weight:700;font-size:1.5rem;letter-spacing:-.02em;overflow:visible;}
+  .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--clay);display:inline-block;animation:pulse 2.4s ease-in-out infinite;}
+  /* logo zoomed in well past the old ~92px, but the nav bar itself stays 72px tall -
+     negative vertical margin lets the mark overflow top/bottom without stretching the white header */
+  .brand-logo{height:132px;width:auto;display:block;margin:-30px 0;position:relative;z-index:2;}
+  @keyframes pulse{
+    0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(193,80,46,.4);}
+    50%{transform:scale(1.15);box-shadow:0 0 0 5px rgba(193,80,46,0);}
+  }
+  .navlinks{display:flex;gap:28px;font-size:.95rem;font-weight:500;justify-self:center;}
+  .navlinks a{text-decoration:none;color:var(--ink-soft);border-bottom:2px solid transparent;padding-bottom:4px;transition:.15s;}
+  .navlinks a:hover{color:var(--ink);border-color:var(--mustard);}
+  .navcta{
+    background:var(--ink);color:var(--paper);border-radius:3px;font-weight:600;font-size:.9rem;
+    text-decoration:none;height:40px;padding:0 20px;display:inline-flex;align-items:center;justify-content:center;
+  }
+  .nav-actions{display:flex;gap:10px;align-items:center;justify-self:end;}
+  .wallet-nav-btn{
+    background:transparent;border:1px solid var(--ink);color:var(--ink);cursor:pointer;
+    font-family:var(--mono);font-size:.8rem;height:40px;padding:0 18px;
+    display:inline-flex;align-items:center;justify-content:center;
+  }
+  .wallet-nav-btn:hover{background:var(--ink);color:var(--paper);}
+  @media(max-width:520px){.wallet-nav-btn span{display:none;}}
+  /* My Policies stays visible in the header at every width, so it's always one tap away
+     even on mobile where .navlinks collapses. Same height/radius/padding rhythm as the
+     other two header actions so the whole right-hand cluster reads as one clean row. */
+  .mypolicies-nav-btn{
+    background:transparent;border:1px solid var(--teal);color:var(--teal);
+    height:40px;padding:0 18px;border-radius:3px;font-weight:600;font-size:.85rem;
+    text-decoration:none;white-space:nowrap;transition:.15s;
+    display:inline-flex;align-items:center;gap:6px;justify-content:center;
+  }
+  .mypolicies-nav-btn:hover{background:var(--teal);color:var(--paper);}
+  @media(max-width:640px){.mypolicies-nav-btn span.full{display:none;}}
+
+
+  .wallet-overlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);
+    z-index:100;align-items:center;justify-content:center;padding:20px;
+  }
+  .wallet-overlay.open{display:flex;}
+  .wallet-modal{
+    background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:32px;max-width:460px;width:100%;
+    position:relative;max-height:90vh;overflow-y:auto;color:var(--ink);
+    animation:fadeUp .25s ease both;
+    box-shadow:0 20px 50px rgba(0,0,0,.25);
+  }
+  .wallet-close{position:absolute;top:20px;right:20px;background:none;border:none;font-size:1.15rem;cursor:pointer;color:var(--ink-soft);}
+  .wallet-close:hover{color:var(--ink);}
+  .wallet-tag{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px;}
+  .wallet-modal h3{
+    font-family:var(--display);font-weight:700;font-size:1.9rem;margin:0 0 14px;
+    letter-spacing:-0.01em;text-transform:uppercase;color:var(--ink);
+  }
+  .wallet-sub{color:var(--ink-soft);font-size:.92rem;margin-bottom:26px;line-height:1.5;}
+  .wallet-section{border-top:1px solid var(--line);padding:20px 0;}
+  .wallet-section:first-of-type{border-top:none;padding-top:0;}
+  .wallet-section-label{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px;}
+  .wallet-section-sublabel{font-family:var(--display);font-weight:600;font-size:1.02rem;margin:-4px 0 12px;color:var(--ink);}
+  #walletNoAccount{background:#F4F3ED;border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin-bottom:4px;}
+  #walletNoAccount .wallet-section-label{color:var(--ink-soft);margin-bottom:8px;}
+  #walletNoAccount a{color:var(--monsoon);font-family:var(--mono);}
+  #walletNoAccount .warn-line{color:var(--clay);font-family:var(--mono);font-size:.82rem;margin-top:4px;}
+  .wallet-section label{display:block;font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;color:var(--ink-soft);}
+  .wallet-section input{
+    width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:6px;
+    font-family:var(--mono);font-size:.95rem;background:#FAFAF6;color:var(--ink);
+  }
+  .wallet-section input::placeholder{color:#A6A59A;}
+  .wallet-section input:focus{outline:none;border-color:var(--monsoon);}
+  .wallet-row{display:flex;justify-content:space-between;padding:6px 0;font-size:.88rem;color:var(--ink-soft);}
+  .wallet-row .mono{font-family:var(--mono);font-weight:600;color:var(--ink);}
+  .wallet-faucets{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;}
+  .btn-ghost-dark{
+    background:transparent;border:1px solid var(--line);color:var(--ink);padding:9px 16px;
+    border-radius:5px;font-size:.83rem;font-weight:600;cursor:pointer;transition:.15s;
+  }
+  .btn-ghost-dark:hover{border-color:var(--monsoon);color:var(--monsoon);}
+  .wallet-activity-item{font-size:.82rem;padding:8px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;color:var(--ink-soft);}
+  .wallet-activity-item:last-child{border-bottom:none;}
+  .wallet-connect-btn{
+    width:100%;margin-top:6px;background:var(--monsoon);color:#FFFFFF;border:none;
+    font-family:var(--body);font-weight:700;font-size:.95rem;letter-spacing:.03em;text-transform:uppercase;
+    padding:16px 20px;border-radius:6px;cursor:pointer;transition:.15s;
+  }
+  .wallet-connect-btn:hover{background:var(--monsoon-deep);}
+  .wallet-toast{
+
+    position:fixed;bottom:24px;right:24px;left:auto;background:var(--ink);color:var(--paper);
+    padding:14px 20px;border-radius:6px;font-size:.88rem;max-width:340px;
+    box-shadow:0 10px 24px rgba(0,0,0,.25);z-index:200;
+    transform:translateY(20px);opacity:0;transition:.3s ease;
+  }
+  .wallet-toast.show{transform:translateY(0);opacity:1;}
+  @media(max-width:480px){.wallet-toast{right:16px;left:16px;max-width:none;}}
+  @media(max-width:820px){.navlinks{display:none;}}
+  @media(max-width:600px){nav.wrap{padding-left:20px;padding-right:20px;}}
+
+  /* ---------- MY POLICIES ---------- */
+  #my-policies{padding:64px 0;}
+  .policies-empty{
+    border:1px dashed var(--line);border-radius:10px;padding:36px 28px;text-align:center;
+    color:var(--ink-soft);font-size:.95rem;
+  }
+  .policies-empty .btn{margin-top:16px;}
+  .policies-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;}
+  .policy-card{
+    background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:20px;
+    animation:fadeUp .4s ease both;
+  }
+  .policy-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px;}
+  .policy-name{font-family:var(--display);font-weight:600;font-size:1.02rem;line-height:1.25;}
+  .policy-status{
+    font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;
+    background:rgba(79,168,160,.16);color:var(--teal);padding:3px 8px;border-radius:20px;white-space:nowrap;
+  }
+  .policy-row{display:flex;justify-content:space-between;font-size:.84rem;padding:5px 0;border-top:1px solid var(--line);color:var(--ink-soft);}
+  .policy-row:first-of-type{border-top:none;}
+  .policy-row .mono{font-family:var(--mono);font-weight:600;color:var(--ink);}
+
+  /* ---------- PURCHASE COMPLETE ANIMATION ---------- */
+  .purchase-anim-overlay{
+    display:none;position:fixed;inset:0;z-index:300;
+    background:rgba(8,25,40,.6);align-items:center;justify-content:center;padding:20px;
+  }
+  .purchase-anim-overlay.show{display:flex;}
+  .purchase-anim-card{
+    background:var(--paper);border-radius:12px;padding:36px 32px;max-width:340px;width:100%;
+    text-align:center;box-shadow:0 24px 48px rgba(0,0,0,.3);
+    animation:purchasePop .45s cubic-bezier(.2,.9,.3,1.2) both;
+  }
+  @keyframes purchasePop{
+    0%{opacity:0;transform:scale(.85) translateY(10px);}
+    100%{opacity:1;transform:scale(1) translateY(0);}
+  }
+  .check-circle{width:76px;height:76px;margin:0 auto 16px;display:block;}
+  .check-circle-bg{
+    fill:none;stroke:var(--teal);stroke-width:4;
+    stroke-dasharray:226;stroke-dashoffset:226;
+    animation:drawCircle .5s ease forwards;
+  }
+  .check-mark{
+    fill:none;stroke:var(--teal);stroke-width:5;stroke-linecap:round;stroke-linejoin:round;
+    stroke-dasharray:46;stroke-dashoffset:46;
+    animation:drawCheck .3s ease .45s forwards;
+  }
+  @keyframes drawCircle{to{stroke-dashoffset:0;}}
+  @keyframes drawCheck{to{stroke-dashoffset:0;}}
+  .purchase-anim-title{font-family:var(--display);font-weight:700;font-size:1.2rem;margin-bottom:8px;}
+  .purchase-anim-sub{font-size:.86rem;color:var(--ink-soft);line-height:1.4;}
+  @media(prefers-reduced-motion: reduce){
+    .purchase-anim-card{animation:none;}
+    .check-circle-bg,.check-mark{animation:none;stroke-dashoffset:0;}
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    background:linear-gradient(180deg,var(--monsoon) 0%,var(--monsoon-deep) 100%);
+    color:var(--paper);
+    padding:72px 0 96px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:'';
+    position:absolute;
+    top:-120px;right:-120px;
+    width:480px;height:480px;
+    border-radius:50%;
+    background:radial-gradient(circle,rgba(232,163,61,.16) 0%,rgba(232,163,61,0) 70%);
+    pointer-events:none;
+    z-index:1;
+  }
+  .hero-video{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    z-index:0;
+    /* zoomed in and re-centered to crop out a recording-software watermark
+       baked into the source clip's corner/edge */
+    transform:scale(1.07);
+    transform-origin:center 40%;
+  }
+  .hero-video-overlay{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg,rgba(8,20,32,.72) 0%,rgba(24,84,128,.62) 55%,rgba(8,20,32,.86) 100%);
+    z-index:0;
+  }
+  .hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;position:relative;z-index:2;}
+  @media(max-width:900px){.hero .wrap{grid-template-columns:1fr;}}
+  .eyebrow{
+    font-family:var(--mono);
+    text-transform:uppercase;
+    letter-spacing:.14em;
+    font-size:.75rem;
+    color:var(--mustard);
+    margin-bottom:18px;
+  }
+
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(18px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  .hero-copy .eyebrow{animation:fadeUp .7s ease .05s both;}
+  .hero-copy .hero-h{animation:fadeUp .7s ease .15s both;}
+  .hero-copy .lede{animation:fadeUp .7s ease .28s both;}
+  .hero-copy .hero-ctas{animation:fadeUp .7s ease .4s both;}
+
+  .hero-visual{position:relative;animation:fadeUp .8s ease .2s both;}
+  .illustration-frame{
+    position:relative;
+    display:flex;justify-content:center;
+    margin-bottom:20px;
+  }
+  .illustration-blob{
+    position:absolute;
+    width:420px;height:420px;
+    border-radius:50%;
+    background:radial-gradient(circle,rgba(255,255,255,.16) 0%,rgba(255,255,255,0) 70%);
+    top:50%;left:50%;
+    transform:translate(-50%,-50%);
+  }
+  .illustration-frame img{
+    position:relative;
+    width:100%;
+    max-width:560px;
+    height:auto;
+    object-fit:contain;
+    margin-left:36px;
+    animation:float 5s ease-in-out infinite;
+  }
+  @media(max-width:900px){
+    .illustration-frame img{margin-left:0;}
+  }
+  @keyframes float{
+    0%,100%{transform:translateY(0px);}
+    50%{transform:translateY(-14px);}
+  }
+  @media(prefers-reduced-motion: reduce){
+    .hero-copy .eyebrow,.hero-copy .hero-h,.hero-copy .lede,.hero-copy .hero-ctas,.hero-visual{animation:none;}
+    .illustration-frame img{animation:none;}
+  }
+  h1.hero-h{
+    font-family:var(--display);
+    font-size:clamp(2.2rem,4.4vw,3.4rem);
+    line-height:1.06;
+    margin:0 0 20px;
+    font-weight:700;
+    letter-spacing:-0.02em;
+  }
+  .hero p.lede{
+    font-size:1.08rem;
+    color:#E4E3D8;
+    max-width:46ch;
+    margin:0 0 30px;
+  }
+  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;}
+  .btn{
+    display:inline-block;padding:13px 26px;border-radius:3px;font-weight:600;
+    text-decoration:none;font-size:.95rem;cursor:pointer;border:1px solid transparent;
+  }
+  .btn{transition:transform .18s ease, background .18s ease, border-color .18s ease;}
+  .btn-primary{background:var(--mustard);color:var(--ink);}
+  .btn-primary:hover{background:#DDAE3E;transform:translateY(-2px);}
+  .btn-ghost{background:transparent;color:var(--paper);border-color:rgba(255,255,255,.4);}
+  .btn-ghost:hover{border-color:var(--paper);transform:translateY(-2px);}
+
+  /* signature gauge */
+  .gauge-card{
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:6px;
+    padding:26px 26px 22px;
+    backdrop-filter:blur(2px);
+  }
+  .gauge-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px;}
+  .gauge-head .label{font-family:var(--mono);font-size:.75rem;letter-spacing:.08em;color:#D6D4C6;text-transform:uppercase;}
+  .gauge-head .unit{font-family:var(--mono);font-size:.8rem;color:var(--mustard);}
+  .gauge-track{
+    position:relative;height:14px;border-radius:8px;
+    background:rgba(255,255,255,.15);
+    margin:8px 0 10px;
+    overflow:visible;
+  }
+  .gauge-fill{
+    position:absolute;left:0;top:0;bottom:0;border-radius:8px;
+    background:linear-gradient(90deg,var(--teal),var(--mustard));
+    width:38%;
+    transition:width 1.8s cubic-bezier(.2,.8,.2,1), background .6s;
+  }
+  .gauge-fill.tripped{background:linear-gradient(90deg,var(--mustard),var(--clay));}
+  .gauge-trigger{
+    position:absolute;top:-6px;bottom:-6px;width:2px;background:var(--paper);
+    left:72%;
+  }
+  .gauge-trigger::after{
+    content:'trigger';
+    position:absolute;top:-20px;left:50%;transform:translateX(-50%);
+    font-family:var(--mono);font-size:.65rem;letter-spacing:.05em;color:var(--paper);white-space:nowrap;
+  }
+  .gauge-readout{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.85rem;color:#E4E3D8;margin-top:14px;}
+  .gauge-status{
+    margin-top:16px;padding:10px 12px;border-radius:4px;
+    font-family:var(--mono);font-size:.8rem;
+    background:rgba(255,255,255,.08);color:#E4E3D8;
+    border-left:3px solid var(--teal);
+  }
+  .gauge-status.tripped{border-left-color:var(--clay);background:rgba(193,80,46,.18);color:#ffd9c9;}
+
+  /* ---------- SECTION HEADINGS ---------- */
+  section{padding:84px 0;}
+  .section-tag{
+    font-family:var(--mono);font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--clay);margin-bottom:12px;
+  }
+  h2.section-h{
+    font-family:var(--display);font-size:clamp(1.7rem,3vw,2.3rem);margin:0 0 14px;font-weight:700;letter-spacing:-0.015em;
+  }
+  .section-sub{color:var(--ink-soft);max-width:60ch;margin-bottom:44px;font-size:1.02rem;}
+
+  /* ---------- HOW IT WORKS ---------- */
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;}
+  @media(max-width:900px){.steps{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:560px){.steps{grid-template-columns:1fr;}}
+  .step{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:26px 22px;transition:transform .2s ease, box-shadow .2s ease;}
+  .step:hover{transform:translateY(-3px);box-shadow:0 10px 20px rgba(8,25,40,.06);}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease, transform .6s ease;}
+  .reveal.in-view{opacity:1;transform:translateY(0);}
+  @media(prefers-reduced-motion: reduce){
+    .reveal{opacity:1;transform:none;transition:none;}
+  }
+  .step .num{font-family:var(--mono);color:var(--clay);font-size:.85rem;margin-bottom:14px;}
+  .step h3{font-family:var(--display);font-size:1.15rem;margin:0 0 8px;}
+  .step p{color:var(--ink-soft);font-size:.92rem;margin:0;}
+
+  /* ---------- CATEGORY PILLS ---------- */
+  .cat-bar{
+    background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    position:sticky;top:72px;z-index:40;
+  }
+  .cat-scroll{display:flex;gap:10px;overflow-x:auto;padding:16px 28px;max-width:1180px;margin:0 auto;}
+  .cat-scroll::-webkit-scrollbar{display:none;}
+  .pill{
+    flex:0 0 auto;font-family:var(--body);font-weight:600;font-size:.88rem;
+    padding:9px 18px;border-radius:20px;border:1px solid var(--line);
+    background:transparent;color:var(--ink-soft);cursor:pointer;transition:.15s;white-space:nowrap;
+  }
+  .pill.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+  .pill:hover:not(.active){border-color:var(--ink);}
+
+  /* ---------- PRODUCT VERTICAL ---------- */
+  .vertical{border-top:1px solid var(--line);}
+  .vertical:first-of-type{border-top:none;}
+  .vertical.hidden{display:none;}
+  .vert-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:36px;flex-wrap:wrap;}
+  .vert-head .unit-tag{font-family:var(--mono);font-size:.78rem;color:var(--teal);background:#E9F4F2;padding:6px 12px;border-radius:20px;}
+
+  .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  @media(max-width:940px){.plans{grid-template-columns:1fr;}}
+  .plan{
+    background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:24px 22px 22px;
+    display:flex;flex-direction:column;
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .plan:hover{transform:translateY(-4px);box-shadow:0 12px 24px rgba(8,25,40,.08);}
+  .plan.featured{border-color:var(--mustard);box-shadow:0 0 0 1px var(--mustard);}
+  .plan.featured:hover{box-shadow:0 0 0 1px var(--mustard),0 12px 24px rgba(8,25,40,.1);}
+  .plan .plan-tag{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px;}
+  .plan h3{font-family:var(--display);font-size:1.3rem;margin:0 0 6px;}
+  .plan .trigger-desc{color:var(--ink-soft);font-size:.88rem;margin-bottom:16px;min-height:40px;}
+  .mini-gauge{height:8px;border-radius:6px;background:var(--line);position:relative;margin-bottom:6px;}
+  .mini-gauge .fill{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:var(--teal);}
+  .mini-gauge .mark{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--clay);}
+  .mini-caption{font-family:var(--mono);font-size:.7rem;color:var(--ink-soft);display:flex;justify-content:space-between;margin-bottom:18px;}
+  .price-row{display:flex;align-items:baseline;gap:6px;margin-bottom:4px;}
+  .price-row .amount{font-family:var(--mono);font-size:1.5rem;font-weight:600;}
+  .price-row .per{font-size:.82rem;color:var(--ink-soft);}
+  .payout-row{font-size:.85rem;color:var(--ink-soft);margin-bottom:20px;}
+  .payout-row b{color:var(--ink);font-family:var(--mono);}
+  .plan .btn{margin-top:auto;text-align:center;}
+
+  /* ---------- CALCULATOR ---------- */
+  .calc{background:var(--ink);color:var(--parchment);border-radius:8px;padding:44px;}
+  .calc .section-tag{color:var(--mustard);}
+  .calc h2{color:var(--paper);}
+  .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;margin-top:28px;}
+  @media(max-width:820px){.calc-grid{grid-template-columns:1fr;}}
+  .field{margin-bottom:20px;}
+  .field label{display:block;font-family:var(--mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:#B9C0B5;margin-bottom:8px;}
+  .field select, .field input[type=number], .field input[type=text]{
+    width:100%;padding:11px 12px;border-radius:4px;border:1px solid #3B463D;
+    background:#1E2B21;color:var(--parchment);font-family:var(--body);font-size:.95rem;
+  }
+  .field input::placeholder{color:#7C8479;}
+  .field-note{font-size:.78rem;color:#8B9388;margin:-10px 0 20px;line-height:1.4;}
+  .result-box{background:#1E2B21;border:1px solid #3B463D;border-radius:6px;padding:26px;}
+  .currency-toggle{display:flex;gap:0;border:1px solid #3B463D;border-radius:4px;overflow:hidden;width:fit-content;}
+  .curr-opt{
+    font-family:var(--mono);font-size:.85rem;font-weight:600;padding:9px 18px;
+    background:#1E2B21;color:#B9C0B5;border:none;cursor:pointer;transition:.15s;
+  }
+  .curr-opt.active{background:var(--mustard);color:var(--ink);}
+  .result-line{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #33402F;font-size:.95rem;}
+  .result-line:last-child{border-bottom:none;}
+  .result-line .v{font-family:var(--mono);font-weight:600;color:var(--mustard);}
+  .result-line.big .v{font-size:1.4rem;}
+
+  /* ---------- FAQ ---------- */
+  .faq-item{border-bottom:1px solid var(--line);}
+  .faq-q{
+    width:100%;text-align:left;background:none;border:none;padding:20px 0;
+    font-family:var(--display);font-size:1.05rem;font-weight:600;color:var(--ink);
+    display:flex;justify-content:space-between;align-items:center;cursor:pointer;
+  }
+  .faq-q .plus{font-family:var(--mono);color:var(--clay);font-size:1.2rem;transition:transform .2s;}
+  .faq-item.open .plus{transform:rotate(45deg);}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .25s ease;color:var(--ink-soft);font-size:.94rem;}
+  .faq-item.open .faq-a{max-height:200px;padding-bottom:20px;}
+
+  /* ---------- TRUST STRIP ---------- */
+  .trust{background:var(--teal);color:#052436;padding:26px 0;overflow:hidden;white-space:nowrap;position:relative;}
+  .trust-track{
+    display:inline-flex;width:max-content;align-items:center;
+    font-family:Arial, Helvetica, sans-serif;font-size:1.05rem;font-weight:600;letter-spacing:.02em;
+    animation:trustScroll 24s linear infinite;
+  }
+  .trust:hover .trust-track{animation-play-state:paused;}
+  .trust-track span{padding:0 26px;display:inline-flex;align-items:center;gap:8px;}
+  .trust-track span.dot{padding:0;opacity:.55;}
+  .trust-track img.rialo-icon{height:26px;width:auto;display:inline-block;vertical-align:middle;object-fit:contain;transform:scale(1);margin:0 4px;}
+  .trust-track img.usdc-icon{height:34px;width:auto;display:inline-block;vertical-align:middle;object-fit:contain;transform:scale(1.3);margin:0 4px;}
+  @keyframes trustScroll{
+    0%{transform:translateX(0);}
+    100%{transform:translateX(-50%);}
+  }
+
+  footer{background:var(--monsoon-deep);color:#D6D4C6;padding:48px 0 28px;font-size:.88rem;}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;}
+  footer .fbrand{margin-bottom:8px;display:flex;align-items:center;}
+  footer .fbrand img{height:76px;width:auto;display:block;}
+  .foot-cols{display:flex;gap:56px;flex-wrap:wrap;}
+  .foot-col h4{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mustard);margin:0 0 12px;}
+  .foot-col a{display:block;text-decoration:none;color:#D6D4C6;margin-bottom:8px;}
+  .foot-bottom{border-top:1px solid rgba(255,255,255,.12);margin-top:36px;padding-top:20px;font-size:.78rem;color:#9A9A88;}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <nav class="wrap">
+    <div class="brand"><img class="brand-logo" src="https://raw.githubusercontent.com/Daisy-she/Trustora/main/tittle.png" alt="Trustora"></div>
+    <div class="navlinks">
+      <a href="#how">How it works</a>
+      <a href="#products">Products</a>
+      <a href="#calculator">Calculator</a>
+      <a href="#faq">FAQ</a>
+      <a href="trustora-docs.html">Docs</a>
+    </div>
+    <div class="nav-actions">
+      <a href="#my-policies" class="mypolicies-nav-btn">📋 <span class="full">My Policies</span></a>
+      <button class="navcta wallet-nav-btn" id="navWalletBtn">Connect Wallet</button>
+      <a href="#calculator" class="navcta">Get a quote</a>
+    </div>
+  </nav>
+</header>
+
+<div class="wallet-overlay" id="walletOverlay">
+  <div class="wallet-modal">
+    <button class="wallet-close" onclick="closeWallet()">✕</button>
+    <h3>Connect Rialo</h3>
+    <p class="wallet-sub">Sign in with your Rialo Playground account. Your session keypair will be used to authorize all transactions.</p>
+
+    <div class="wallet-section">
+      <label for="walletUserId">Rialo User ID</label>
+      <input id="walletUserId" placeholder="e.g. daisy_shee or your User ID">
+    </div>
+
+    <div class="wallet-section">
+      <label for="walletPubkeyInput">Public Key / Wallet Address</label>
+      <input id="walletPubkeyInput" placeholder="e.g. daisy.c7xKQ…m2Nf or paste your address">
+    </div>
+
+    <div class="wallet-section">
+      <label for="walletName">Display name (optional)</label>
+      <input id="walletName" placeholder="e.g. Daisy">
+    </div>
+
+    <div class="wallet-section" id="walletNoAccount">
+      <p style="font-size:.85rem;color:var(--ink-soft);margin:0 0 6px;">Get your User ID and public key from:</p>
+      <p style="margin:0 0 10px;"><a href="https://playground.rialo.io/account" target="_blank" rel="noopener">→ playground.rialo.io/account</a></p>
+      <p style="font-size:.82rem;color:var(--ink-soft);margin:0;">Use the faucet below to get devnet USDC / USDT.</p>
+      <p class="warn-line">Transfers use a simulated ledger for this preview - no funds leave your wallet.</p>
+    </div>
+
+    <div class="wallet-section" id="walletConnectedSection" style="display:none;">
+      <div class="wallet-section-label">Session</div>
+      <div class="wallet-row"><span>User ID</span><span class="mono" id="walletUserIdDisplay">Not signed in</span></div>
+      <div class="wallet-row"><span>Public key</span><span class="mono" id="walletPubkey">Not connected</span></div>
+      <div class="wallet-row"><span>USDC balance</span><span class="mono" id="walletUSDC">0.00 USDC</span></div>
+      <div class="wallet-row"><span>USDT balance</span><span class="mono" id="walletUSDT">0.00 USDT</span></div>
+      <div class="wallet-faucets">
+        <button class="btn-ghost-dark" onclick="requestFaucet('USDC')">Request devnet USDC</button>
+        <button class="btn-ghost-dark" onclick="requestFaucet('USDT')">Request devnet USDT</button>
+      </div>
+    </div>
+
+    <div class="wallet-section" id="walletActivitySection" style="display:none;">
+      <div class="wallet-section-label">Recent activity</div>
+      <div id="walletActivity"></div>
+    </div>
+
+    <div class="wallet-section" id="walletSignOutSection" style="display:none;">
+      <div class="wallet-section-label">Danger zone</div>
+      <p style="font-size:.8rem;color:var(--ink-soft);margin:0 0 10px;">Ends this session across Trustora and any other Rialo Playground app.</p>
+      <button class="btn-ghost-dark" onclick="signOutWallet()">Sign out</button>
+    </div>
+
+    <button class="wallet-connect-btn" id="walletConnectBtn" onclick="connectWallet()">⚡ Connect Account →</button>
+  </div>
+</div>
+
+<div class="purchase-anim-overlay" id="purchaseAnim">
+  <div class="purchase-anim-card">
+    <svg class="check-circle" viewBox="0 0 80 80">
+      <circle class="check-circle-bg" cx="40" cy="40" r="36"/>
+      <path class="check-mark" d="M23 41 L34 52 L57 27"/>
+    </svg>
+    <div class="purchase-anim-title">Policy purchased</div>
+    <div class="purchase-anim-sub" id="purchaseAnimSub"></div>
+  </div>
+</div>
+
+<div class="wallet-overlay" id="detailsOverlay">
+  <div class="wallet-modal">
+    <button class="wallet-close" onclick="closeDetailsModal()">✕</button>
+    <div class="wallet-tag" id="detailsTag">PLAN DETAILS</div>
+    <h3 id="detailsTitle">Before you check out</h3>
+    <p class="wallet-sub" id="detailsSub">These details are used to track the trigger against live public data.</p>
+    <div class="wallet-section" id="detailsFields"></div>
+    <p class="wallet-sub" id="detailsQuote" style="margin-bottom:14px;"></p>
+    <button class="wallet-connect-btn" id="detailsConfirmBtn" onclick="confirmDetailsPurchase()">Confirm &amp; buy</button>
+  </div>
+</div>
+
+<section class="hero">
+  <video class="hero-video" autoplay muted loop playsinline poster="https://raw.githubusercontent.com/Daisy-she/Trustora/main/trust.png">
+    <source src="https://raw.githubusercontent.com/Daisy-she/Trustora/main/herobakend.mp4" type="video/mp4">
+  </video>
+  <div class="hero-video-overlay"></div>
+  <div class="wrap">
+    <div class="hero-copy">
+      <div class="eyebrow">Parametric insurance · no claims forms</div>
+      <h1 class="hero-h">Insurance that pays the moment the trigger is crossed.</h1>
+      <p class="lede">Rain over your field, a delayed flight, a late train, a lost parcel - Trustora watches the same public data you would, and pays out automatically the instant the number crosses your line. No adjuster, no dispute, no waiting.</p>
+      <div class="hero-ctas">
+        <a href="#calculator" class="btn btn-primary">Calculate my premium</a>
+        <a href="#how" class="btn btn-ghost">See how it works</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="illustration-frame">
+        <div class="illustration-blob"></div>
+        <img src="https://raw.githubusercontent.com/Daisy-she/Trustora/main/trust.png" alt="An umbrella held over a family, shielding them from rain, with icons for a train, motorbike, luggage, delays, and payouts, representing all-round insurance coverage">
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="trust">
+  <div class="trust-track">
+    <span>Auto-payout, no claim form</span><span class="dot">•</span>
+    <span>Verified against public data feeds</span><span class="dot">•</span>
+    <span>Pay in <img class="usdc-icon" src="https://raw.githubusercontent.com/Daisy-she/Trustora/main/usdc%20%26%20usdt%20png.png" alt="USDC and USDT"></span><span class="dot">•</span>
+    <span>Trigger shown before you buy</span><span class="dot">•</span>
+    <span style="gap:2px;">Built on<img class="rialo-icon" src="https://raw.githubusercontent.com/Daisy-she/Trustora/main/rialo.1.png" alt="Rialo"></span><span class="dot">•</span>
+    <span>Auto-payout, no claim form</span><span class="dot">•</span>
+    <span>Verified against public data feeds</span><span class="dot">•</span>
+    <span>Pay in <img class="usdc-icon" src="https://raw.githubusercontent.com/Daisy-she/Trustora/main/usdc%20%26%20usdt%20png.png" alt="USDC and USDT"></span><span class="dot">•</span>
+    <span>Trigger shown before you buy</span><span class="dot">•</span>
+    <span style="gap:2px;">Built on<img class="rialo-icon" src="https://raw.githubusercontent.com/Daisy-she/Trustora/main/rialo.1.png" alt="Rialo"></span><span class="dot">•</span>
+  </div>
+</div>
+
+<section id="how">
+  <div class="wrap">
+    <div class="section-tag">The mechanism</div>
+    <h2 class="section-h">One rule, seven products</h2>
+    <p class="section-sub">Every Trustora policy works the same way underneath - only the meter changes. Rainfall in centimetres, delay in minutes, a hailstorm flag, a lost-parcel status. Pick your meter, pick your line, get paid the second it's crossed.</p>
+    <div class="steps">
+      <div class="step reveal"><div class="num">01</div><h3>Choose your meter</h3><p>Rainfall for a field, delay minutes for a flight or train, a damage/loss flag for a parcel or bag.</p></div>
+      <div class="step reveal"><div class="num">02</div><h3>Set your trigger</h3><p>See the exact line on the gauge - the reading that turns your policy into a payout.</p></div>
+      <div class="step reveal"><div class="num">03</div><h3>Pay the premium</h3><p>Priced per acre, per vehicle, per trip or per parcel - shown before you commit.</p></div>
+      <div class="step reveal"><div class="num">04</div><h3>Get paid automatically</h3><p>The moment the public data feed reports a reading past your line, payout is released - no form to fill.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="cat-bar" id="products">
+  <div class="cat-scroll" id="catScroll">
+    <button class="pill active" data-cat="crop">🌾 Crop & Rain</button>
+    <button class="pill" data-cat="flight">✈️ Flight</button>
+    <button class="pill" data-cat="train">🚆 Train</button>
+    <button class="pill" data-cat="bike">🏍️ Bike</button>
+    <button class="pill" data-cat="car">🚗 Car</button>
+    <button class="pill" data-cat="parcel">📦 Parcel</button>
+    <button class="pill" data-cat="luggage">🧳 Luggage</button>
+    <button class="pill" data-cat="health">🏥 Health</button>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+
+    <!-- CROP -->
+    <div class="vertical" data-vert="crop">
+      <div class="vert-head">
+        <div>
+          <div class="section-tag">Vertical 01</div>
+          <h2 class="section-h">Crop & Rain Cover</h2>
+          <p class="section-sub" style="margin-bottom:0;">Priced per acre. Set a rainfall trigger for your season - excess rain, dry spell, or both - and get paid without a field visit.</p>
+        </div>
+        <span class="unit-tag">Meter: cm of rainfall</span>
+      </div>
+      <div class="plans">
+        <div class="plan reveal">
+          <div class="plan-tag">Cheapest</div>
+          <h3>Partial Damage</h3>
+          <div class="trigger-desc">Pays a partial amount once rain crosses a moderate mark - a low-cost entry cover.</div>
+          <div class="mini-gauge"><div class="fill" style="width:60%"></div><div class="mark" style="left:75%"></div></div>
+          <div class="mini-caption"><span>0cm</span><span>Trigger: 15cm/48hr</span></div>
+          <div class="price-row"><span class="amount">$8</span><span class="per">USDC / acre / season</span></div>
+          <div class="payout-row">Payout: <b>$60</b> per acre</div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('crop',0)">Choose plan</button>
+        </div>
+        <div class="plan featured reveal">
+          <div class="plan-tag">Most picked</div>
+          <h3>Standard Season</h3>
+          <div class="trigger-desc">Full-season excess-rain cover with a higher trigger and a bigger payout.</div>
+          <div class="mini-gauge"><div class="fill" style="width:50%"></div><div class="mark" style="left:80%"></div></div>
+          <div class="mini-caption"><span>0cm</span><span>Trigger: 20cm/72hr</span></div>
+          <div class="price-row"><span class="amount">$15</span><span class="per">USDC / acre / season</span></div>
+          <div class="payout-row">Payout: <b>$130</b> per acre</div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('crop',1)">Choose plan</button>
+        </div>
+        <div class="plan reveal">
+          <div class="plan-tag">Widest cover</div>
+          <h3>Full Protection</h3>
+          <div class="trigger-desc">Dual trigger - pays out on both excess rain and a dry spell, whichever hits first.</div>
+          <div class="mini-gauge"><div class="fill" style="width:70%;background:var(--mustard)"></div><div class="mark" style="left:40%"></div><div class="mark" style="left:85%"></div></div>
+          <div class="mini-caption"><span>Dry</span><span>Wet trigger: 25cm</span></div>
+          <div class="price-row"><span class="amount">$25</span><span class="per">USDC / acre / season</span></div>
+          <div class="payout-row">Payout: <b>$220</b> per acre</div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('crop',2)">Choose plan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLIGHT -->
+    <div class="vertical hidden" data-vert="flight">
+      <div class="vert-head">
+        <div>
+          <div class="section-tag">Vertical 02</div>
+          <h2 class="section-h">Flight Delay & Cancellation</h2>
+          <p class="section-sub" style="margin-bottom:0;">Priced per journey. Trigger checked against live flight-status data - payout lands before you leave the airport.</p>
+        </div>
+        <span class="unit-tag">Meter: minutes delayed</span>
+      </div>
+      <div class="plans">
+        <div class="plan reveal">
+          <div class="plan-tag">Basic</div>
+          <h3>Delay Cover</h3>
+          <div class="trigger-desc">Payout once your flight is delayed past the line.</div>
+          <div class="mini-gauge"><div class="fill" style="width:35%"></div><div class="mark" style="left:60%"></div></div>
+          <div class="mini-caption"><span>0m</span><span>Trigger: 120 min</span></div>
+          <div class="price-row"><span class="amount">$6</span><span class="per">USDC / trip</span></div>
+          <div class="payout-row">Payout: <b>$60</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('flight',0)">Choose plan</button>
+        </div>
+        <div class="plan featured reveal">
+          <div class="plan-tag">Most picked</div>
+          <h3>Delay + Cancellation</h3>
+          <div class="trigger-desc">Covers both a long delay and an outright cancellation.</div>
+          <div class="mini-gauge"><div class="fill" style="width:45%"></div><div class="mark" style="left:55%"></div></div>
+          <div class="mini-caption"><span>0m</span><span>Trigger: 90 min or cancelled</span></div>
+          <div class="price-row"><span class="amount">$10</span><span class="per">USDC / trip</span></div>
+          <div class="payout-row">Payout: <b>$120</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('flight',1)">Choose plan</button>
+        </div>
+        <div class="plan reveal">
+          <div class="plan-tag">Full cover</div>
+          <h3>Missed Connection</h3>
+          <div class="trigger-desc">Pays out if your first leg's delay causes you to miss your connecting flight.</div>
+          <div class="mini-gauge"><div class="fill" style="width:55%;background:var(--mustard)"></div><div class="mark" style="left:65%"></div></div>
+          <div class="mini-caption"><span>0m</span><span>Trigger: missed connection</span></div>
+          <div class="price-row"><span class="amount">$14</span><span class="per">USDC / trip</span></div>
+          <div class="payout-row">Payout: <b>$180</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('flight',2)">Choose plan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRAIN -->
+    <div class="vertical hidden" data-vert="train">
+      <div class="vert-head">
+        <div>
+          <div class="section-tag">Vertical 03</div>
+          <h2 class="section-h">Train Delay & Cancellation</h2>
+          <p class="section-sub" style="margin-bottom:0;">Priced per journey, checked against live running-status data.</p>
+        </div>
+        <span class="unit-tag">Meter: minutes delayed</span>
+      </div>
+      <div class="plans">
+        <div class="plan reveal">
+          <div class="plan-tag">Basic</div>
+          <h3>Delay Cover</h3>
+          <div class="trigger-desc">Payout once your train arrives past the line.</div>
+          <div class="mini-gauge"><div class="fill" style="width:40%"></div><div class="mark" style="left:70%"></div></div>
+          <div class="mini-caption"><span>0m</span><span>Trigger: 90 min</span></div>
+          <div class="price-row"><span class="amount">$4</span><span class="per">USDC / trip</span></div>
+          <div class="payout-row">Payout: <b>$35</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('train',0)">Choose plan</button>
+        </div>
+        <div class="plan featured reveal">
+          <div class="plan-tag">Most picked</div>
+          <h3>Delay + Cancellation</h3>
+          <div class="trigger-desc">Covers a long delay or a fully cancelled train.</div>
+          <div class="mini-gauge"><div class="fill" style="width:50%"></div><div class="mark" style="left:60%"></div></div>
+          <div class="mini-caption"><span>0m</span><span>Trigger: 60 min or cancelled</span></div>
+          <div class="price-row"><span class="amount">$7</span><span class="per">USDC / trip</span></div>
+          <div class="payout-row">Payout: <b>$65</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('train',1)">Choose plan</button>
+        </div>
+        <div class="plan reveal">
+          <div class="plan-tag">Full cover</div>
+          <h3>Missed Connection</h3>
+          <div class="trigger-desc">Pays if a delay causes you to miss a connecting train.</div>
+          <div class="mini-gauge"><div class="fill" style="width:55%;background:var(--mustard)"></div><div class="mark" style="left:65%"></div></div>
+          <div class="mini-caption"><span>0m</span><span>Trigger: missed connection</span></div>
+          <div class="price-row"><span class="amount">$9</span><span class="per">USDC / trip</span></div>
+          <div class="payout-row">Payout: <b>$90</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('train',2)">Choose plan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BIKE -->
+    <div class="vertical hidden" data-vert="bike">
+      <div class="vert-head">
+        <div>
+          <div class="section-tag">Vertical 04</div>
+          <h2 class="section-h">Bike Insurance</h2>
+          <p class="section-sub" style="margin-bottom:0;">Core cover is traditional (accidents need assessment) - the flood and heat add-ons are parametric, and pay out automatically like the rest of Trustora.</p>
+        </div>
+        <span class="unit-tag">Hybrid: assessed + parametric add-ons</span>
+      </div>
+      <div class="plans">
+        <div class="plan reveal">
+          <div class="plan-tag">Base</div>
+          <h3>Third-Party + Theft</h3>
+          <div class="trigger-desc">Standard liability and theft cover - assessed, not parametric.</div>
+          <div class="price-row"><span class="amount">$35</span><span class="per">USDC / year</span></div>
+          <div class="payout-row">Cover up to <b>$1,200</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('bike',0)">Choose plan</button>
+        </div>
+        <div class="plan featured reveal">
+          <div class="plan-tag">Most picked</div>
+          <h3>+ Flood Zone Add-on</h3>
+          <div class="trigger-desc">Automatic payout if your registered zone crosses a flood-risk rainfall mark that day.</div>
+          <div class="mini-gauge"><div class="fill" style="width:55%"></div><div class="mark" style="left:80%"></div></div>
+          <div class="mini-caption"><span>0cm</span><span>Trigger: 20cm/24hr</span></div>
+          <div class="price-row"><span class="amount">$18</span><span class="per">USDC / year</span></div>
+          <div class="payout-row">Add-on payout: <b>$150</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('bike',1)">Choose plan</button>
+        </div>
+        <div class="plan reveal">
+          <div class="plan-tag">EV owners</div>
+          <h3>+ Heat Stress Add-on</h3>
+          <div class="trigger-desc">Payout if local temperature crosses a mark linked to battery degradation risk.</div>
+          <div class="mini-gauge"><div class="fill" style="width:65%;background:var(--mustard)"></div><div class="mark" style="left:78%"></div></div>
+          <div class="mini-caption"><span>0°C</span><span>Trigger: 45°C</span></div>
+          <div class="price-row"><span class="amount">$22</span><span class="per">USDC / year</span></div>
+          <div class="payout-row">Add-on payout: <b>$110</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('bike',2)">Choose plan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAR -->
+    <div class="vertical hidden" data-vert="car">
+      <div class="vert-head">
+        <div>
+          <div class="section-tag">Vertical 05</div>
+          <h2 class="section-h">Car Insurance</h2>
+          <p class="section-sub" style="margin-bottom:0;">Same hybrid model as bike - assessed base cover, parametric flood and hail add-ons pay automatically.</p>
+        </div>
+        <span class="unit-tag">Hybrid: assessed + parametric add-ons</span>
+      </div>
+      <div class="plans">
+        <div class="plan reveal">
+          <div class="plan-tag">Base</div>
+          <h3>Third-Party + Own Damage</h3>
+          <div class="trigger-desc">Standard comprehensive cover - assessed, not parametric.</div>
+          <div class="price-row"><span class="amount">$180</span><span class="per">USDC / year</span></div>
+          <div class="payout-row">Cover up to <b>$6,000</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('car',0)">Choose plan</button>
+        </div>
+        <div class="plan featured reveal">
+          <div class="plan-tag">Most picked</div>
+          <h3>+ Flood Zone Add-on</h3>
+          <div class="trigger-desc">Automatic payout if your parking zone crosses a flood-risk rainfall mark.</div>
+          <div class="mini-gauge"><div class="fill" style="width:55%"></div><div class="mark" style="left:80%"></div></div>
+          <div class="mini-caption"><span>0cm</span><span>Trigger: 20cm/24hr</span></div>
+          <div class="price-row"><span class="amount">$85</span><span class="per">USDC / year</span></div>
+          <div class="payout-row">Add-on payout: <b>$500</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('car',1)">Choose plan</button>
+        </div>
+        <div class="plan reveal">
+          <div class="plan-tag">Storm-prone areas</div>
+          <h3>+ Hailstorm Add-on</h3>
+          <div class="trigger-desc">Flat payout the moment a hail event is recorded in your district.</div>
+          <div class="mini-gauge"><div class="fill" style="width:100%;background:var(--clay)"></div></div>
+          <div class="mini-caption"><span>No hail</span><span>Hail recorded → payout</span></div>
+          <div class="price-row"><span class="amount">$45</span><span class="per">USDC / year</span></div>
+          <div class="payout-row">Add-on payout: <b>$280</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('car',2)">Choose plan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PARCEL -->
+    <div class="vertical hidden" data-vert="parcel">
+      <div class="vert-head">
+        <div>
+          <div class="section-tag">Vertical 06</div>
+          <h2 class="section-h">Parcel Insurance</h2>
+          <p class="section-sub" style="margin-bottom:0;">Priced per shipment. Delay and loss are fully parametric against courier tracking status; damage needs a photo.</p>
+        </div>
+        <span class="unit-tag">Meter: hours past SLA / tracking status</span>
+      </div>
+      <div class="plans">
+        <div class="plan reveal">
+          <div class="plan-tag">Cheapest</div>
+          <h3>Delay Cover</h3>
+          <div class="trigger-desc">Payout if delivery crosses the promised time window.</div>
+          <div class="mini-gauge"><div class="fill" style="width:45%"></div><div class="mark" style="left:70%"></div></div>
+          <div class="mini-caption"><span>0hr</span><span>Trigger: 48hr past SLA</span></div>
+          <div class="price-row"><span class="amount">$3</span><span class="per">USDC / shipment</span></div>
+          <div class="payout-row">Payout: <b>$25</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('parcel',0)">Choose plan</button>
+        </div>
+        <div class="plan featured reveal">
+          <div class="plan-tag">Most picked</div>
+          <h3>Loss Cover</h3>
+          <div class="trigger-desc">Flat payout if the parcel is marked undelivered past a cutoff date.</div>
+          <div class="mini-gauge"><div class="fill" style="width:100%;background:var(--clay)"></div></div>
+          <div class="mini-caption"><span>In transit</span><span>Lost → payout</span></div>
+          <div class="price-row"><span class="amount">$6</span><span class="per">USDC / shipment</span></div>
+          <div class="payout-row">Payout: value declared, up to <b>$150</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('parcel',1)">Choose plan</button>
+        </div>
+        <div class="plan reveal">
+          <div class="plan-tag">Fragile goods</div>
+          <h3>Damage Cover</h3>
+          <div class="trigger-desc">Payout on submitted proof of damage at delivery.</div>
+          <div class="price-row"><span class="amount">$8</span><span class="per">USDC / shipment</span></div>
+          <div class="payout-row">Payout: value declared, up to <b>$200</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('parcel',2)">Choose plan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LUGGAGE -->
+    <div class="vertical hidden" data-vert="luggage">
+      <div class="vert-head">
+        <div>
+          <div class="section-tag">Vertical 07</div>
+          <h2 class="section-h">Luggage Insurance</h2>
+          <p class="section-sub" style="margin-bottom:0;">Priced per trip. Delay is checked automatically against baggage-handling data; loss and damage need a short report.</p>
+        </div>
+        <span class="unit-tag">Meter: hours past landing</span>
+      </div>
+      <div class="plans">
+        <div class="plan reveal">
+          <div class="plan-tag">Cheapest</div>
+          <h3>Delay Cover</h3>
+          <div class="trigger-desc">Payout if checked luggage isn't delivered within the line after landing.</div>
+          <div class="mini-gauge"><div class="fill" style="width:40%"></div><div class="mark" style="left:65%"></div></div>
+          <div class="mini-caption"><span>0hr</span><span>Trigger: 12hr after landing</span></div>
+          <div class="price-row"><span class="amount">$6</span><span class="per">USDC / trip</span></div>
+          <div class="payout-row">Payout: <b>$60</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('luggage',0)">Choose plan</button>
+        </div>
+        <div class="plan featured reveal">
+          <div class="plan-tag">Most picked</div>
+          <h3>Loss Cover</h3>
+          <div class="trigger-desc">Flat payout if the airline declares luggage lost after a set number of days.</div>
+          <div class="mini-gauge"><div class="fill" style="width:100%;background:var(--clay)"></div></div>
+          <div class="mini-caption"><span>Tracked</span><span>Declared lost → payout</span></div>
+          <div class="price-row"><span class="amount">$10</span><span class="per">USDC / trip</span></div>
+          <div class="payout-row">Payout: <b>$150</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('luggage',1)">Choose plan</button>
+        </div>
+        <div class="plan reveal">
+          <div class="plan-tag">Full cover</div>
+          <h3>Delay + Loss + Damage</h3>
+          <div class="trigger-desc">All three triggers bundled under one premium.</div>
+          <div class="price-row"><span class="amount">$14</span><span class="per">USDC / trip</span></div>
+          <div class="payout-row">Payout: up to <b>$200</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('luggage',2)">Choose plan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HEALTH -->
+    <div class="vertical hidden" data-vert="health">
+      <div class="vert-head">
+        <div>
+          <div class="section-tag">Vertical 08</div>
+          <h2 class="section-h">Health Insurance</h2>
+          <p class="section-sub" style="margin-bottom:0;">Priced per person, per year. Premium is set from your age and how many years of cover you want - enter your details when you choose a plan.</p>
+        </div>
+        <span class="unit-tag">Rated on: age &amp; policy term</span>
+      </div>
+      <div class="plans">
+        <div class="plan reveal">
+          <div class="plan-tag">Cheapest</div>
+          <h3>Basic Cover</h3>
+          <div class="trigger-desc">Essential hospitalisation cover - the lowest-cost entry plan.</div>
+          <div class="price-row"><span class="amount">$300</span><span class="per">USDC / year (from)</span></div>
+          <div class="payout-row">Cover up to <b>$5,000</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('health',0)">Choose plan</button>
+        </div>
+        <div class="plan featured reveal">
+          <div class="plan-tag">Most picked</div>
+          <h3>Standard Cover</h3>
+          <div class="trigger-desc">Broader hospitalisation and treatment cover for everyday health risks.</div>
+          <div class="price-row"><span class="amount">$450</span><span class="per">USDC / year (from)</span></div>
+          <div class="payout-row">Cover up to <b>$15,000</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('health',1)">Choose plan</button>
+        </div>
+        <div class="plan reveal">
+          <div class="plan-tag">Widest cover</div>
+          <h3>Premium Cover</h3>
+          <div class="trigger-desc">Highest cover limit, for major treatment and extended hospital stays.</div>
+          <div class="price-row"><span class="amount">$650</span><span class="per">USDC / year (from)</span></div>
+          <div class="payout-row">Cover up to <b>$30,000</b></div>
+          <button class="btn btn-primary" onclick="buyPolicyFromCard('health',2)">Choose plan</button>
+        </div>
+      </div>
+      <p style="font-size:.8rem;color:var(--ink-soft);margin-top:14px;">Final premium = base rate × years of cover × age band. You'll be asked for your age and policy term before checkout.</p>
+    </div>
+
+  </div>
+</section>
+
+<section id="my-policies">
+  <div class="wrap">
+    <div class="section-tag">Your cover</div>
+    <h2 class="section-h">My Policies</h2>
+    <p class="section-sub">Every policy you buy on Trustora, signed by the same devnet keypair.</p>
+    <div id="myPoliciesEmpty" class="policies-empty">
+      Sign in and buy a plan from any product above - it'll show up here with its premium, payout, and purchase time.
+      <div>
+        <button class="btn btn-primary" onclick="openWallet()">Sign in &amp; connect wallet</button>
+      </div>
+    </div>
+    <div class="policies-grid" id="myPoliciesList"></div>
+  </div>
+</section>
+
+<section id="calculator">
+  <div class="wrap">
+    <div class="calc">
+      <div class="section-tag">Try it</div>
+      <h2 class="section-h">See your premium and payout</h2>
+      <div class="calc-grid">
+        <div>
+          <div class="field">
+            <label>Product</label>
+            <select id="calcProduct">
+              <option value="crop">Crop & Rain (per acre)</option>
+              <option value="flight">Flight (per trip)</option>
+              <option value="train">Train (per trip)</option>
+              <option value="bike">Bike add-on (per year)</option>
+              <option value="car">Car add-on (per year)</option>
+              <option value="parcel">Parcel (per shipment)</option>
+              <option value="luggage">Luggage (per trip)</option>
+              <option value="health">Health (per year, before age adjustment)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Plan tier</label>
+            <select id="calcPlan"></select>
+          </div>
+          <div class="field" id="calcQtyFieldWrap">
+            <label id="qtyLabel">Number of acres</label>
+            <input type="number" id="calcQty" value="1" min="1">
+          </div>
+          <div class="field" id="calcAgeFieldWrap" style="display:none;">
+            <label>Your age</label>
+            <input type="number" id="calcAge" placeholder="Enter your age" min="1" max="110">
+          </div>
+          <div class="field-note" id="calcDetailsNote">Fill these in the same way you would from a product card - they carry straight into your purchase.</div>
+          <div id="calcDetailsWrap"></div>
+          <div class="field">
+            <label>Pay with</label>
+            <div class="currency-toggle" id="currencyToggle">
+              <button type="button" class="curr-opt active" data-curr="USDC">USDC</button>
+              <button type="button" class="curr-opt" data-curr="USDT">USDT</button>
+            </div>
+          </div>
+        </div>
+        <div class="result-box">
+          <div class="result-line"><span>Premium per unit</span><span class="v" id="rPremiumUnit">$4 USDC</span></div>
+          <div class="result-line"><span>Units</span><span class="v" id="rQty">1</span></div>
+          <div class="result-line big"><span>Total premium</span><span class="v" id="rTotal">$4 USDC</span></div>
+          <div class="result-line big"><span>Max payout if triggered</span><span class="v" id="rPayout">$45 USDC</span></div>
+          <button class="btn btn-primary" id="calcBuyBtn" style="width:100%;margin-top:18px;">Buy with wallet</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="section-tag">Questions</div>
+    <h2 class="section-h">Frequently asked</h2>
+    <div class="faq-list">
+      <div class="faq-item open reveal">
+        <button class="faq-q"><span>What does "parametric" actually mean?</span><span class="plus">+</span></button>
+        <div class="faq-a">Your policy is tied to a public, checkable number - rainfall in cm, delay in minutes, a tracking status - instead of an assessor's judgment call. Cross the agreed line, and payout is automatic.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q"><span>Do I need to file a claim?</span><span class="plus">+</span></button>
+        <div class="faq-a">For rain, flight, train, parcel-loss and luggage-delay/loss products, no - the trigger check is automatic. Bike and car own-damage, and parcel/luggage physical damage, still need a short report since they aren't pure data triggers.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q"><span>Where does the trigger data come from?</span><span class="plus">+</span></button>
+        <div class="faq-a">Rainfall from district weather stations, flight and train status from live running-status feeds, and parcel/luggage status from courier and airline tracking systems.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q"><span>Can I combine more than one product?</span><span class="plus">+</span></button>
+        <div class="faq-a">Yes - bundle plans across categories (for example, crop cover plus a flight-delay policy for market days) and manage them all from one dashboard.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="fbrand"><img src="https://raw.githubusercontent.com/Daisy-she/Trustora/main/tittle.png" alt="Trustora"></div>
+      <p style="max-width:32ch;color:#9A9A88;">Insurance that pays when the number crosses the line - no forms, no adjusters.</p>
+      <div style="margin-top:12px;">
+        <p style="font-family:var(--mono);font-size:.95rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mustard);margin:0 0 8px;">🔗 Built on</p>
+        <img src="https://raw.githubusercontent.com/Daisy-she/Trustora/main/rialo.1.png" alt="Rialo" style="height:36px;width:auto;object-fit:contain;display:block;">
+      </div>
+    </div>
+    <div class="foot-cols">
+      <div class="foot-col">
+        <h4>Products</h4>
+        <a href="#products">Crop & Rain</a>
+        <a href="#products">Flight</a>
+        <a href="#products">Train</a>
+        <a href="#products">Bike / Car</a>
+        <a href="#products">Parcel / Luggage</a>
+      </div>
+      <div class="foot-col">
+        <h4>Company</h4>
+        <a href="#how">How it works</a>
+        <a href="#faq">FAQ</a>
+        <a href="#calculator">Get a quote</a>
+      </div>
+      <div class="foot-col">
+        <h4>Resources</h4>
+        <a href="trustora-docs.html">Documentation</a>
+        <a href="#my-policies">My Policies</a>
+      </div>
+    </div>
+  </div>
+  <div class="wrap foot-bottom">© 2026 Trustora. Parametric insurance concept - not a licensed insurer.</div>
+</footer>
+
+<script>
+  // scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach((entry,i)=>{
+      if(entry.isIntersecting){
+        setTimeout(()=>entry.target.classList.add('in-view'), i*60);
+        io.unobserve(entry.target);
+      }
+    });
+  },{threshold:.12});
+  revealEls.forEach(el=>io.observe(el));
+
+  // category pills
+  const pills = document.querySelectorAll('.pill');
+  const verts = document.querySelectorAll('.vertical');
+  pills.forEach(p=>{
+    p.addEventListener('click',()=>{
+      pills.forEach(x=>x.classList.remove('active'));
+      p.classList.add('active');
+      const cat = p.dataset.cat;
+      verts.forEach(v=>{
+        v.classList.toggle('hidden', v.dataset.vert !== cat);
+      });
+      document.getElementById('products').scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-q').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const item = btn.parentElement;
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+      if(!wasOpen) item.classList.add('open');
+    });
+  });
+
+  // ---------- Rialo account & wallet integration ----------
+  // Simulated single sign-on + custodial wallet, modeled directly on the real
+  // Rialo Playground account flow (playground.rialo.io/account): sign in once
+  // with an email/name, get one devnet keypair, and that same session/wallet
+  // is valid across every product on Trustora (crop, flight, train, bike,
+  // car, parcel, luggage). No real accounts, funds, or network calls are
+  // involved - everything here lives only in this browser tab. Visitors
+  // without a real Rialo Playground account are pointed to
+  // playground.rialo.io/account to create one.
+  const TIER_NAMES = {
+    crop:['Partial Damage','Standard Season','Full Protection'],
+    flight:['Delay Cover','Delay + Cancellation','Missed Connection'],
+    train:['Delay Cover','Delay + Cancellation','Missed Connection'],
+    bike:['Third-Party + Theft','Flood Zone Add-on','Heat Stress Add-on'],
+    car:['Third-Party + Own Damage','Flood Zone Add-on','Hailstorm Add-on'],
+    parcel:['Delay Cover','Loss Cover','Damage Cover'],
+    luggage:['Delay Cover','Loss Cover','Delay + Loss + Damage'],
+    health:['Basic Cover','Standard Cover','Premium Cover']
+  };
+
+  // Every product now captures the specific details a real trigger-check API
+  // would need - kept generic/worldwide (no city or country assumed) since
+  // Trustora is not built for any one country.
+  const DETAIL_FIELDS = {
+    crop: [
+      {id:'city', label:'City', placeholder:'Enter your city'},
+      {id:'country', label:'Country', placeholder:'Enter your country'}
+    ],
+    flight: [
+      {id:'airline', label:'Airline', placeholder:'Enter airline name'},
+      {id:'flightNumber', label:'Flight number', placeholder:'Enter flight number'},
+      {id:'fromCity', label:'From (origin city or airport)', placeholder:'Enter origin city or airport'},
+      {id:'toCity', label:'To (destination city or airport)', placeholder:'Enter destination city or airport'}
+    ],
+    train: [
+      {id:'fromCity', label:'From (origin city)', placeholder:'Enter origin city'},
+      {id:'toCity', label:'To (destination city)', placeholder:'Enter destination city'},
+      {id:'trainNumber', label:'Train number', placeholder:'Enter train number'},
+      {id:'ticketRef', label:'Ticket / PNR number', placeholder:'Enter ticket or PNR number'}
+    ],
+    bike: [
+      {id:'regNumber', label:'Bike registration number', placeholder:'Enter registration number'},
+      {id:'zone', label:'Registered city / zone', placeholder:'Enter city or zone'}
+    ],
+    car: [
+      {id:'regNumber', label:'Car registration number', placeholder:'Enter registration number'},
+      {id:'zone', label:'Registered city / zone', placeholder:'Enter city or zone'}
+    ],
+    parcel: [
+      {id:'courier', label:'Courier company', placeholder:'Enter courier company name'},
+      {id:'trackingNumber', label:'Tracking / AWB number', placeholder:'Enter tracking number'},
+      {id:'destCity', label:'Destination city', placeholder:'Enter destination city'}
+    ],
+    luggage: [
+      {id:'airline', label:'Airline', placeholder:'Enter airline name'},
+      {id:'flightNumber', label:'Flight number', placeholder:'Enter flight number'},
+      {id:'bagTag', label:'Baggage tag number', placeholder:'Enter baggage tag number'}
+    ],
+    health: [
+      {id:'age', label:'Your age', placeholder:'Enter your age', type:'number'},
+      {id:'years', label:'Policy term (years)', placeholder:'Enter number of years', type:'number', value:'1'}
+    ]
+  };
+
+  let pendingPurchase = null; // {product, tier, qty}
+
+  function healthAgeFactor(age){
+    if(age <= 25) return 0.9;
+    if(age <= 45) return 1.0;
+    if(age <= 60) return 1.25;
+    return 1.5;
+  }
+
+  // Single source of truth for pricing - used by the calculator preview AND
+  // the actual purchase confirmation, so the two numbers can never drift
+  // apart. qty = acres/trips/shipments/vehicles (or, for health, years).
+  function computeQuote(product, tier, qty, age){
+    const r = RATES[product];
+    const units = Math.max(1, qty || 1);
+    let premium;
+    if(product === 'health'){
+      premium = r.prem[tier] * units * healthAgeFactor(age || 35);
+    } else {
+      premium = r.prem[tier] * units;
+    }
+    return {premium: +premium.toFixed(2), payout: r.payout[tier]};
+  }
+
+  function openDetailsModal(product, tier, qty){
+    pendingPurchase = {product, tier, qty: Math.max(1, qty || 1)};
+    const fields = DETAIL_FIELDS[product] || [];
+    const box = document.getElementById('detailsFields');
+    box.innerHTML = fields.map(f => {
+      // health's "years" field mirrors whatever qty was chosen in the calculator
+      // (if any) so the two stay in sync instead of asking twice.
+      const prefill = (product === 'health' && f.id === 'years' && qty) ? qty : (f.value || '');
+      // prefill health age from the calculator's age field if it was already entered
+      const ageFromCalc = (product === 'health' && f.id === 'age') ? (document.getElementById('calcAge')?.value || '') : '';
+      const val = ageFromCalc || prefill;
+      return `
+      <label for="detail_${f.id}">${f.label}</label>
+      <input id="detail_${f.id}" type="${f.type || 'text'}" placeholder="${f.placeholder || ''}" value="${val}" oninput="updateDetailsQuote()">
+    `;
+    }).join('');
+    document.getElementById('detailsTag').textContent = product.toUpperCase() + ' - ' + TIER_NAMES[product][tier];
+    const titles = {
+      health:'Get your health quote', train:'Train journey details', flight:'Flight journey details',
+      bike:'Bike details', car:'Car details', parcel:'Parcel details', luggage:'Luggage / flight details',
+      crop:'Where should we watch the rain?'
+    };
+    const subs = {
+      health:'Your premium is calculated from your age and policy term.',
+      train:'We use this to check your train\'s live running status against the trigger.',
+      flight:'We use this to check your flight\'s live status against the trigger.',
+      bike:'We use this to check your registered zone against the rainfall/heat trigger.',
+      car:'We use this to check your registered zone against the rainfall/hail trigger.',
+      parcel:'We use this to check courier tracking status against the trigger.',
+      luggage:'We use this to check baggage-handling status against the trigger.',
+      crop:'We use this to check district rainfall data against your trigger.'
+    };
+    document.getElementById('detailsTitle').textContent = titles[product] || 'Plan details';
+    document.getElementById('detailsSub').textContent = subs[product] || '';
+    document.getElementById('detailsOverlay').classList.add('open');
+    updateDetailsQuote();
+  }
+  function closeDetailsModal(){
+    document.getElementById('detailsOverlay').classList.remove('open');
+    pendingPurchase = null;
+  }
+  function updateDetailsQuote(){
+    if(!pendingPurchase) return;
+    const {product, tier, qty} = pendingPurchase;
+    const quoteEl = document.getElementById('detailsQuote');
+    if(product === 'health'){
+      const age = parseInt(document.getElementById('detail_age').value) || 0;
+      const years = Math.max(1, parseInt(document.getElementById('detail_years').value) || 1);
+      if(age > 0){
+        const q = computeQuote('health', tier, years, age);
+        quoteEl.textContent = 'Estimated premium: ' + q.premium + ' ' + currentCurrency() + ' for ' + years + ' yr - cover up to ' + fmtBal(q.payout) + ' ' + currentCurrency();
+      } else {
+        quoteEl.textContent = 'Enter your age to see the exact premium.';
+      }
+    } else {
+      const q = computeQuote(product, tier, qty, null);
+      quoteEl.textContent = qty > 1
+        ? ('Premium: ' + q.premium + ' ' + currentCurrency() + ' total for ' + qty + ' ' + RATES[product].unit + '(s)')
+        : '';
+    }
+  }
+  // Builds the final {name, premium, payout, extraRows} for any product -
+  // shared by both the product-card details modal and the calculator's
+  // inline fields, so the two paths can never produce different numbers
+  // or different-looking policy names.
+  function buildPurchase(product, tier, qty, values){
+    if(product === 'health'){
+      const age = parseInt(values.age) || 0;
+      const years = Math.max(1, parseInt(values.years) || 1);
+      if(age < 1 || age > 110){ showToast('Please enter a valid age'); return null; }
+      const q = computeQuote('health', tier, years, age);
+      return {
+        name: PRODUCT_NAMES.health + ' - ' + TIER_NAMES.health[tier] + ' (Age ' + age + ', ' + years + ' yr)',
+        premium: q.premium, payout: q.payout,
+        extraRows: [['Age', age], ['Policy term', years + ' yr']]
+      };
+    }
+    const q = computeQuote(product, tier, qty, null);
+    let name, extraRows = [];
+    if(product === 'train'){
+      name = PRODUCT_NAMES.train + ' - ' + TIER_NAMES.train[tier] + ' (' + values.fromCity + ' → ' + values.toCity + ')';
+      extraRows = [['Route', values.fromCity + ' → ' + values.toCity], ['Train no.', values.trainNumber], ['Ticket / PNR', values.ticketRef]];
+    } else if(product === 'flight'){
+      name = PRODUCT_NAMES.flight + ' - ' + TIER_NAMES.flight[tier] + ' (' + values.fromCity + ' → ' + values.toCity + ')';
+      extraRows = [['Airline', values.airline], ['Flight no.', values.flightNumber], ['Route', values.fromCity + ' → ' + values.toCity]];
+    } else if(product === 'crop'){
+      name = PRODUCT_NAMES.crop + ' - ' + TIER_NAMES.crop[tier] + ' (' + values.city + ', ' + values.country + ')';
+      extraRows = [['City', values.city], ['Country', values.country]];
+    } else if(product === 'bike'){
+      name = PRODUCT_NAMES.bike + ' - ' + TIER_NAMES.bike[tier] + ' (' + values.regNumber + ')';
+      extraRows = [['Registration no.', values.regNumber], ['Zone', values.zone]];
+    } else if(product === 'car'){
+      name = PRODUCT_NAMES.car + ' - ' + TIER_NAMES.car[tier] + ' (' + values.regNumber + ')';
+      extraRows = [['Registration no.', values.regNumber], ['Zone', values.zone]];
+    } else if(product === 'parcel'){
+      name = PRODUCT_NAMES.parcel + ' - ' + TIER_NAMES.parcel[tier] + ' (' + values.trackingNumber + ')';
+      extraRows = [['Courier', values.courier], ['Tracking no.', values.trackingNumber], ['Destination', values.destCity]];
+    } else if(product === 'luggage'){
+      name = PRODUCT_NAMES.luggage + ' - ' + TIER_NAMES.luggage[tier] + ' (' + values.flightNumber + ')';
+      extraRows = [['Airline', values.airline], ['Flight no.', values.flightNumber], ['Baggage tag', values.bagTag]];
+    }
+    if(qty > 1) extraRows.push(['Units', qty + ' ' + RATES[product].unit + '(s)']);
+    return {name, premium: q.premium, payout: q.payout, extraRows};
+  }
+
+  function confirmDetailsPurchase(){
+    if(!pendingPurchase) return;
+    const {product, tier, qty} = pendingPurchase;
+    const fields = DETAIL_FIELDS[product] || [];
+    const values = {};
+    for(const f of fields){
+      const el = document.getElementById('detail_' + f.id);
+      const v = el ? el.value.trim() : '';
+      if(!v){ showToast('Please fill in ' + f.label.toLowerCase()); el && el.focus(); return; }
+      values[f.id] = v;
+    }
+    const result = buildPurchase(product, tier, qty, values);
+    if(!result) return;
+    closeDetailsModal();
+    buyPolicy(result.name, result.premium, result.payout, result.extraRows);
+  }
+
+  const wallet = { connected:false, name:'', userId:'', pubkey:'', balances:{USDC:0, USDT:0}, activity:[] };
+
+  function randPubkey(){
+    // Rialo is SVM-compatible, so account keys are base58 (like Solana), not 0x-hex -
+    // this generates a 44-char base58 string and shows it the way real Rialo/SVM wallets do
+    const b58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+    let s = '';
+    for(let i=0;i<44;i++) s += b58[Math.floor(Math.random()*b58.length)];
+    return s.slice(0,4) + '…' + s.slice(-4);
+  }
+  function randUserId(){
+    const chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+    let s = 'usr_';
+    for(let i=0;i<8;i++) s += chars[Math.floor(Math.random()*chars.length)];
+    return s;
+  }
+  function formatPubkeyDisplay(v){
+    if(v.length <= 10) return v;
+    return v.slice(0,4) + '…' + v.slice(-4);
+  }
+  function currentCurrency(){
+    const active = document.querySelector('.curr-opt.active');
+    return active ? active.dataset.curr : 'USDC';
+  }
+  function fmtBal(n){ return n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+
+  function renderWallet(){
+    const connectBtn = document.getElementById('walletConnectBtn');
+    const navBtn = document.getElementById('navWalletBtn');
+    const noAccountBox = document.getElementById('walletNoAccount');
+    const connectedSection = document.getElementById('walletConnectedSection');
+    const signOutSection = document.getElementById('walletSignOutSection');
+    if(wallet.connected){
+      document.getElementById('walletUserIdDisplay').textContent = wallet.userId;
+      document.getElementById('walletPubkey').textContent = wallet.pubkey;
+      document.getElementById('walletUSDC').textContent = fmtBal(wallet.balances.USDC) + ' USDC';
+      document.getElementById('walletUSDT').textContent = fmtBal(wallet.balances.USDT) + ' USDT';
+      connectBtn.style.display = 'none';
+      noAccountBox.style.display = 'none';
+      connectedSection.style.display = 'block';
+      signOutSection.style.display = 'block';
+      document.getElementById('walletUserId').disabled = true;
+      document.getElementById('walletPubkeyInput').disabled = true;
+      document.getElementById('walletName').disabled = true;
+      navBtn.textContent = wallet.pubkey + ' · ' + fmtBal(wallet.balances[currentCurrency()]) + ' ' + currentCurrency();
+      const actSection = document.getElementById('walletActivitySection');
+      const actList = document.getElementById('walletActivity');
+      if(wallet.activity.length){
+        actSection.style.display = 'block';
+        actList.innerHTML = wallet.activity.map(a=>
+          `<div class="wallet-activity-item"><span>${a.name}</span><span class="mono">-${fmtBal(a.premium)} ${a.currency}</span></div>`
+        ).join('');
+      } else {
+        actSection.style.display = 'none';
+      }
+    } else {
+      connectBtn.style.display = 'block';
+      noAccountBox.style.display = 'block';
+      connectedSection.style.display = 'none';
+      signOutSection.style.display = 'none';
+      document.getElementById('walletUserId').disabled = false;
+      document.getElementById('walletPubkeyInput').disabled = false;
+      document.getElementById('walletName').disabled = false;
+      navBtn.textContent = 'Connect Wallet';
+      document.getElementById('walletActivitySection').style.display = 'none';
+    }
+  }
+
+  function openWallet(){
+    document.getElementById('walletOverlay').classList.add('open');
+    renderWallet();
+  }
+  function closeWallet(){
+    document.getElementById('walletOverlay').classList.remove('open');
+  }
+  function connectWallet(){
+    const userIdInput = document.getElementById('walletUserId').value.trim();
+    const pubkeyInput = document.getElementById('walletPubkeyInput').value.trim();
+    wallet.connected = true;
+    wallet.userId = userIdInput || randUserId();
+    wallet.pubkey = pubkeyInput ? formatPubkeyDisplay(pubkeyInput) : randPubkey();
+    wallet.name = document.getElementById('walletName').value || 'Guest';
+    wallet.balances.USDC = 1000;
+    wallet.balances.USDT = 1000;
+    renderWallet();
+    renderMyPolicies();
+    showToast('Connected - 1,000 USDC + 1,000 USDT devnet funds added. This wallet buys any product on Trustora.');
+  }
+  function requestFaucet(curr){
+    if(!wallet.connected){
+      showToast('Connect your account first to request devnet funds');
+      document.getElementById('walletUserId').focus();
+      return;
+    }
+    wallet.balances[curr] += 200;
+    renderWallet();
+    showToast('+200 ' + curr + ' added from devnet faucet');
+  }
+  function signOutWallet(){
+    wallet.connected = false;
+    wallet.name = '';
+    wallet.userId = '';
+    wallet.pubkey = '';
+    wallet.balances = {USDC:0, USDT:0};
+    wallet.activity = [];
+    document.getElementById('walletUserId').value = '';
+    document.getElementById('walletPubkeyInput').value = '';
+    document.getElementById('walletName').value = '';
+    renderWallet();
+    renderMyPolicies();
+    closeWallet();
+    showToast('Signed out - this ends your session across all Rialo Playground apps');
+  }
+
+  function showToast(msg){
+    let t = document.getElementById('walletToast');
+    if(!t){
+      t = document.createElement('div');
+      t.id = 'walletToast';
+      t.className = 'wallet-toast';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    requestAnimationFrame(()=>t.classList.add('show'));
+    clearTimeout(t._hideTimer);
+    t._hideTimer = setTimeout(()=>t.classList.remove('show'), 3200);
+  }
+
+  function randPolicyId(){
+    const chars = '0123456789ABCDEFGHJKMNPQRSTUVWXYZ';
+    let s = 'POL-';
+    for(let i=0;i<6;i++) s += chars[Math.floor(Math.random()*chars.length)];
+    return s;
+  }
+
+  function showPurchaseAnimation(name, premium, currency, payout){
+    const overlay = document.getElementById('purchaseAnim');
+    document.getElementById('purchaseAnimSub').textContent =
+      name + ' - ' + fmtBal(premium) + ' ' + currency + ' paid, up to ' + fmtBal(payout) + ' ' + currency + ' payout';
+    const circle = overlay.querySelector('.check-circle-bg');
+    const check = overlay.querySelector('.check-mark');
+    const card = overlay.querySelector('.purchase-anim-card');
+    overlay.classList.add('show');
+    // restart the draw-in animations every time this fires
+    [circle, check, card].forEach(el => { el.style.animation = 'none'; });
+    void overlay.offsetWidth; // force reflow so the animation replays
+    circle.style.animation = '';
+    check.style.animation = '';
+    card.style.animation = '';
+    clearTimeout(overlay._hideTimer);
+    overlay._hideTimer = setTimeout(()=>overlay.classList.remove('show'), 2000);
+  }
+
+  function renderMyPolicies(){
+    const empty = document.getElementById('myPoliciesEmpty');
+    const list = document.getElementById('myPoliciesList');
+    if(!wallet.connected || wallet.activity.length === 0){
+      empty.style.display = 'block';
+      list.innerHTML = '';
+      if(wallet.connected){
+        empty.innerHTML = "You haven't bought a policy yet - pick a plan from any product above and it'll show up here.";
+      } else {
+        empty.innerHTML = 'Connect your Rialo account and buy a plan from any product above - it\'ll show up here with its premium, payout, and purchase time.<div><button class="btn btn-primary" onclick="openWallet()">Connect account</button></div>';
+      }
+      return;
+    }
+    empty.style.display = 'none';
+    list.innerHTML = wallet.activity.map(a => `
+      <div class="policy-card">
+        <div class="policy-top"><span class="policy-name">${a.name}</span><span class="policy-status">Active</span></div>
+        <div class="policy-row"><span>Policy ID</span><span class="mono">${a.id}</span></div>
+        ${(a.extraRows||[]).map(r => `<div class="policy-row"><span>${r[0]}</span><span class="mono">${r[1]}</span></div>`).join('')}
+        <div class="policy-row"><span>Premium paid</span><span class="mono">${fmtBal(a.premium)} ${a.currency}</span></div>
+        <div class="policy-row"><span>Max payout</span><span class="mono">${fmtBal(a.payout)} ${a.currency}</span></div>
+        <div class="policy-row"><span>Purchased</span><span class="mono">${a.purchasedAt}</span></div>
+      </div>
+    `).join('');
+  }
+
+  function buyPolicy(name, premium, payout, extraRows){
+    if(!wallet.connected){
+      openWallet();
+      showToast('Connect your Rialo account to buy a policy');
+      return;
+    }
+    const currency = currentCurrency();
+    if(wallet.balances[currency] < premium){
+      openWallet();
+      showToast('Not enough ' + currency + ' - try the devnet faucet');
+      return;
+    }
+    wallet.balances[currency] = +(wallet.balances[currency] - premium).toFixed(2);
+    const purchasedAt = new Date().toLocaleString('en-US', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+    wallet.activity.unshift({id: randPolicyId(), name, premium, currency, payout, purchasedAt, extraRows: extraRows || []});
+    renderWallet();
+    renderMyPolicies();
+    showPurchaseAnimation(name, premium, currency, payout);
+  }
+  function buyPolicyFromCard(product, tier){
+    // Every product now needs a short details step first - location/journey
+    // info so the trigger tracks the right feed, or age/term for health so
+    // the premium can be calculated. This is the exact same modal the
+    // calculator's "Buy with wallet" button uses, so the numbers you see in
+    // the calculator and the numbers you actually pay always match.
+    if(!wallet.connected){
+      openWallet();
+      showToast('Connect your Rialo account to buy a policy');
+      return;
+    }
+    openDetailsModal(product, tier, 1);
+  }
+
+  document.getElementById('navWalletBtn').addEventListener('click', openWallet);
+  document.querySelectorAll('.curr-opt').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.curr-opt').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      recalc();
+      renderWallet();
+    });
+  });
+
+  // calculator - priced in USDC / USDT stablecoin (1:1 preview rate)
+  const RATES = {
+    crop:   {label:'Number of acres',     unit:'acre',     prem:[8,15,25],      payout:[60,130,220]},
+    flight: {label:'Number of trips',     unit:'trip',     prem:[6,10,14],      payout:[60,120,180]},
+    train:  {label:'Number of trips',     unit:'trip',     prem:[4,7,9],        payout:[35,65,90]},
+    bike:   {label:'Number of bikes',     unit:'bike/yr',  prem:[35,18,22],     payout:[1200,150,110]},
+    car:    {label:'Number of cars',      unit:'car/yr',   prem:[180,85,45],    payout:[6000,500,280]},
+    parcel: {label:'Number of shipments', unit:'shipment', prem:[3,6,8],        payout:[25,150,200]},
+    luggage:{label:'Number of trips',     unit:'trip',     prem:[6,10,14],      payout:[60,150,200]},
+    health: {label:'Policy term (years)', unit:'yr',       prem:[300,450,650],  payout:[5000,15000,30000]}
+  };
+  const PRODUCT_NAMES = {
+    crop:'Crop & Rain', flight:'Flight', train:'Train', bike:'Bike', car:'Car', parcel:'Parcel', luggage:'Luggage', health:'Health'
+  };
+  const fmt = n => '$' + (n % 1 === 0 ? n.toLocaleString('en-US') : n.toFixed(2));
+
+  // Same field list the product cards use - health's age/term are left out
+  // here because the calculator already has dedicated Age and "policy term"
+  // (its qty field) inputs, so we don't ask twice.
+  function calcDetailFieldsFor(product){
+    return product === 'health' ? [] : (DETAIL_FIELDS[product] || []);
+  }
+  function renderCalcTierOptions(product){
+    const sel = document.getElementById('calcPlan');
+    const prevIndex = sel.value || '1';
+    sel.innerHTML = TIER_NAMES[product].map((t,i) => `<option value="${i}"${String(i)===prevIndex ? ' selected' : ''}>${t}</option>`).join('');
+  }
+  function renderCalcDetailFields(product){
+    const fields = calcDetailFieldsFor(product);
+    const wrap = document.getElementById('calcDetailsWrap');
+    const note = document.getElementById('calcDetailsNote');
+    if(fields.length === 0){
+      wrap.innerHTML = '';
+      note.style.display = 'none';
+      return;
+    }
+    note.style.display = 'block';
+    wrap.innerHTML = fields.map(f => `
+      <div class="field">
+        <label for="calcDetail_${f.id}">${f.label}</label>
+        <input id="calcDetail_${f.id}" type="${f.type || 'text'}" placeholder="${f.placeholder || ''}">
+      </div>
+    `).join('');
+  }
+
+  function recalc(){
+    const product = document.getElementById('calcProduct').value;
+    const qty = Math.max(1, parseInt(document.getElementById('calcQty').value)||1);
+    const tier = parseInt(document.getElementById('calcPlan').value);
+    const r = RATES[product];
+    document.getElementById('qtyLabel').textContent = r.label;
+
+    // Health prices off age, not a plain quantity - swap which input shows.
+    const isHealth = product === 'health';
+    document.getElementById('calcQtyFieldWrap').style.display = 'block';
+    document.getElementById('calcAgeFieldWrap').style.display = isHealth ? 'block' : 'none';
+    const age = isHealth ? (parseInt(document.getElementById('calcAge').value) || null) : null;
+
+    const q = computeQuote(product, tier, qty, age);
+    document.getElementById('rPremiumUnit').textContent = fmt(r.prem[tier]) + ' USDC / ' + r.unit + (isHealth ? ' (before age adjustment)' : '');
+    document.getElementById('rQty').textContent = qty;
+    document.getElementById('rTotal').textContent = fmt(q.premium) + ' ' + currentCurrency() + (isHealth && !age ? ' (enter age for exact price)' : '');
+    document.getElementById('rPayout').textContent = fmt(q.payout) + ' ' + currentCurrency() + (product==='crop' ? ' / acre' : '');
+  }
+
+  // Product changes swap the tier list AND the detail fields underneath it -
+  // this is what keeps the calculator in sync with the product cards: pick
+  // "Crop & Rain" here and the plan tier dropdown shows the exact same
+  // Partial Damage / Standard Season / Full Protection names as the cards,
+  // with the same City/Country fields right below it.
+  function onCalcProductChange(){
+    const product = document.getElementById('calcProduct').value;
+    renderCalcTierOptions(product);
+    renderCalcDetailFields(product);
+    recalc();
+  }
+  document.getElementById('calcProduct').addEventListener('change', onCalcProductChange);
+  ['calcQty','calcPlan','calcAge'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', recalc);
+    document.getElementById(id).addEventListener('change', recalc);
+  });
+  onCalcProductChange();
+  renderMyPolicies();
+
+  document.getElementById('calcBuyBtn').addEventListener('click', ()=>{
+    const product = document.getElementById('calcProduct').value;
+    const qty = Math.max(1, parseInt(document.getElementById('calcQty').value)||1);
+    const tier = parseInt(document.getElementById('calcPlan').value);
+    if(!wallet.connected){
+      openWallet();
+      showToast('Connect your Rialo account to buy a policy');
+      return;
+    }
+    // Read the same fields, by the same ids/labels, that the product-card
+    // modal reads - collected inline here so buying from the calculator
+    // needs no extra popup step.
+    const values = {};
+    if(product === 'health'){
+      values.age = document.getElementById('calcAge').value.trim();
+      values.years = qty;
+    } else {
+      for(const f of calcDetailFieldsFor(product)){
+        const el = document.getElementById('calcDetail_' + f.id);
+        const v = el ? el.value.trim() : '';
+        if(!v){ showToast('Please fill in ' + f.label.toLowerCase()); el && el.focus(); return; }
+        values[f.id] = v;
+      }
+    }
+    const result = buildPurchase(product, tier, qty, values);
+    if(!result) return;
+    buyPolicy(result.name, result.premium, result.payout, result.extraRows);
+  });
+</script>
+
+
+
+</body>
+</html>
